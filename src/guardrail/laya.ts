@@ -9,7 +9,7 @@ export class LayaGuard {
   async load(): Promise<void> {
     if (this.model) return;
     const started = performance.now();
-    this.model = await Laya.load({ subfolder: "multilingual", modelDir: process.env.LAYA_MODEL_DIR, ...this.options });
+    this.model = await Laya.load({ subfolder: "multilingual", modelDir: process.env.LAYA_MODEL_DIR || undefined, ...this.options });
     this.loadLatencyMs = performance.now() - started;
   }
 

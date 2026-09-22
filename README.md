@@ -13,12 +13,11 @@ User → Combined Guardrail ┬→ @llm-guardrails/core (injection, secrets, lea
 ## Run
 
 ```sh
-cp .env.example .env # fill OPENROUTER_API_KEY to call the test agent
 npm run cli
 npm run eval
 ```
 
-Laya downloads the multilingual ONNX model once (about 1.7 GB) and caches it at `~/.cache/receptron-laya`; set `LAYA_MODEL_DIR` to a local bundle to avoid downloading. Allow roughly 2 GB RAM. The first load is reported by the guard object; each result reports core, Laya, and combined latencies. OpenRouter latency is kept separate.
+The supplied `.env` uses `.cache/receptron-laya` for Laya's multilingual ONNX download (about 1.7 GB). Set `LAYA_MODEL_DIR` to a complete local bundle to avoid downloading. Fill `OPENROUTER_API_KEY` only to let allowed CLI requests reach the downstream test agent. Allow roughly 2 GB RAM. The first load is reported by the guard object; each result reports core, Laya, and combined latencies. OpenRouter latency is kept separate.
 
 The eval has 40 Indonesian, English, and mixed-language cases. It runs thresholds 0.50–0.90, prints all failures, and reports accuracy, false positives/negatives, block precision, recall, and F1. Tune `xenaPolicy.thresholds` only after inspecting those failures.
 
