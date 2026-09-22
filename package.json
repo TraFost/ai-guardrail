@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=20" },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc --noEmit",
@@ -11,8 +13,10 @@
     "eval": "node --env-file=.env --import tsx src/eval/runner.ts"
   },
   "dependencies": {
+    "@huggingface/tokenizers": "^0.2.0",
     "@llm-guardrails/core": "^0.4.1",
     "@receptron/laya": "^0.1.2",
+    "onnxruntime-node": "^1.30.0",
     "openai": "^4.104.0"
   },
   "devDependencies": {

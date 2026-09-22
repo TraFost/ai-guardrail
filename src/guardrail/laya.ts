@@ -1,4 +1,8 @@
 import { Laya, type LayaOptions } from "@receptron/laya";
+import { Tokenizer } from "@huggingface/tokenizers";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
+import * as ort from "onnxruntime-node";
 import type { GuardrailPolicy, SemanticCheck } from "./types.js";
 
 export class LayaGuard {
@@ -9,19 +13,25 @@ export class LayaGuard {
   async load(): Promise<void> {
     if (this.model) return;
     const started = performance.now();
-    this.model = await Laya.load({
-      repo: "receptron/laya-onnx",
-      subfolder: "multilingual",
-      cacheDir: process.env.LAYA_CACHE,
-      executionProviders: ["cpu"],
-      modelDir: process.env.LAYA_MODEL_DIR || undefined,
-      onProgress: ({ file, received, total }) => {
-        const percent = total ? ` ${(received / total * 100).toFixed(1)}%` : "";
-        process.stderr.write(`\rDownloading Laya: ${file}${percent}`);
-        if (total && received >= total) process.stderr.write("\n");
-      },
-      ...this.options,
+    const modelDir = process.env.LAYA_MODEL_DIR;
+    if (!modelDir) throw new Error("LAYA_MODEL_DIR must point to the exported multilingual ONNX bundle");
+    const directory = path.resolve(modelDir);
+    const config = JSON.parse(await readFile(path.join(directory, "laya_config.json"), "utf8"));
+    const tokenizer = new Tokenizer(
+      JSON.parse(await readFile(path.join(directory, "tokenizer/tokenizer.json"), "utf8")),
+      JSON.parse(await readFile(path.join(directory, "tokenizer/tokenizer_config.json"), "utf8")),
+    );
+    const id = (token: string) => {
+      const value = tokenizer.token_to_id(token);
+      if (value === undefined) throw new Error(`special token ${token} missing from multilingual tokenizer`);
+      return value;
+    };
+    const session = await ort.InferenceSession.create(path.join(directory, "laya.onnx"), {
+      executionProviders: this.options.executionProviders ?? ["cpu"], graphOptimizationLevel: "all", ...this.options.sessionOptions,
     });
+    // @receptron/laya's loader targets the English ModernBERT tokens. Its public inference class works unchanged with mmBERT token IDs.
+    const LayaConstructor = Laya as unknown as new (session: ort.InferenceSession, tokenizer: Tokenizer, config: object, ids: object, modelDir: string) => Laya;
+    this.model = new LayaConstructor(session, tokenizer, config, { cls: id("<bos>"), sep: id("<eos>"), mask: id("<mask>"), pad: id("<pad>"), maskTok: "<mask>" }, directory);
     this.loadLatencyMs = performance.now() - started;
   }
 
