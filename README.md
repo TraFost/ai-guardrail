@@ -26,7 +26,7 @@ See [the local Laya installation guide](docs/local-laya-model.md) for the full e
 
 Each CLI session and evaluation run writes a timestamped JSON result to `temp/output/`.
 
-The eval has 55 Indonesian, English, and mixed-language cases, including informal Indonesian automotive requests. It runs thresholds 0.50–0.90, prints all failures, and reports accuracy, false positives/negatives, block precision, recall, and F1. Tune `xenaPolicy.thresholds` only after inspecting those failures.
+The eval has 55 Indonesian, English, and mixed-language cases, including informal Indonesian automotive requests. It runs Laya once per case, then scores thresholds 0.50–0.90 from the recorded probabilities. It prints progress and updates `temp/output/eval-progress.json` every five cases before writing the final report. Tune `xenaPolicy.thresholds` only after inspecting failures, accuracy, false positives/negatives, block precision, recall, and F1.
 
 To add another product, create a policy matching `GuardrailPolicy` and call `createGuardrail({ policy })`. Move `src/guardrail` into XENA unchanged; retain product behavior in `src/policies/xena.ts`.
 
