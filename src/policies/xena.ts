@@ -8,5 +8,5 @@ export const xenaPolicy: GuardrailPolicy = {
     allowConversationalMessages: true,
   },
   semanticChecks: { domainRelevance: true, manipulation: true, restrictedInformation: true },
-  thresholds: { minimumDomainRelevance: 0.6, manipulation: 0.7, restrictedInformation: 0.7 },
+  thresholds: { minimumDomainRelevance: 0.6, manipulation: 0.8, restrictedInformation: 0.9 },
 };
