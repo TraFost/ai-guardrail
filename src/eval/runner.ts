@@ -1,6 +1,7 @@
 import { createGuardrail } from "../guardrail/index.js";
 import { xenaPolicy } from "../policies/xena.js";
 import { cases } from "./cases.js";
+import { writeOutput } from "../output.js";
 
 function metrics(results: { expected: string; actual: string }[]) {
   const tp = results.filter((r) => r.expected === "block" && r.actual === "block").length;
@@ -22,6 +23,9 @@ async function run(threshold: number) {
   const summary = metrics(results);
   console.log(`\nthreshold=${threshold}`, summary);
   for (const failed of results.filter((r) => r.expected !== r.actual)) console.log("FAILED", failed);
+  return { threshold, summary, results };
 }
 
-for (const threshold of [0.5, 0.6, 0.7, 0.8, 0.9]) await run(threshold);
+const results = [];
+for (const threshold of [0.5, 0.6, 0.7, 0.8, 0.9]) results.push(await run(threshold));
+console.log(`Results: ${await writeOutput("eval", { createdAt: new Date().toISOString(), results })}`);
