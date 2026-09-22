@@ -9,7 +9,19 @@ export class LayaGuard {
   async load(): Promise<void> {
     if (this.model) return;
     const started = performance.now();
-    this.model = await Laya.load({ subfolder: "multilingual", modelDir: process.env.LAYA_MODEL_DIR || undefined, ...this.options });
+    this.model = await Laya.load({
+      repo: "receptron/laya-onnx",
+      subfolder: "multilingual",
+      cacheDir: process.env.LAYA_CACHE,
+      executionProviders: ["cpu"],
+      modelDir: process.env.LAYA_MODEL_DIR || undefined,
+      onProgress: ({ file, received, total }) => {
+        const percent = total ? ` ${(received / total * 100).toFixed(1)}%` : "";
+        process.stderr.write(`\rDownloading Laya: ${file}${percent}`);
+        if (total && received >= total) process.stderr.write("\n");
+      },
+      ...this.options,
+    });
     this.loadLatencyMs = performance.now() - started;
   }
 
