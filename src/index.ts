@@ -20,7 +20,7 @@ try {
   } else {
     console.log("Calling OpenRouter...");
     try {
-      const openRouter = await runAgent(question);
+      const openRouter = await runAgent(question, guard);
       console.dir(openRouter);
       console.log(`Results: ${await writeOutput("cli", { createdAt: new Date().toISOString(), question, guardrail, openRouter })}`);
     } catch (error) {

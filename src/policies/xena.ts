@@ -7,6 +7,5 @@ export const xenaPolicy: GuardrailPolicy = {
     allowedTopics: ["vehicle discovery", "vehicle recommendations", "vehicle specifications", "automotive financing", "installments", "down payments", "tenor", "promotions", "showrooms", "automotive sales"],
     allowConversationalMessages: true,
   },
-  semanticChecks: { domainRelevance: true, manipulation: true, restrictedInformation: true },
-  thresholds: { minimumDomainRelevance: 0.6, manipulation: 0.8, restrictedInformation: 0.9 },
+  tools: ["search_vehicles", "simulate_installment", "find_showrooms"],
 };

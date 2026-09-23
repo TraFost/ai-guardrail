@@ -10,6 +10,8 @@ User → Combined Guardrail ┬→ @llm-guardrails/core (injection, secrets, lea
 
 `@llm-guardrails/core` supplies fast deterministic checks. Laya supplies batched local semantic probabilities for domain relevance, manipulation, and restricted-information requests. OpenRouter is strictly downstream and is never used as a judge.
 
+Input and output use deterministic core checks. Tool names and arguments are validated deterministically before execution. Laya remains installed for later experiments but is not on the active request path. The test agent can search vehicles, simulate installments, and find showrooms.
+
 ## Run
 
 ```sh
